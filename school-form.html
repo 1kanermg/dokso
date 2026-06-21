@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мектеп деректерін жинау</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+    color: #e2e8f0; min-height: 100vh; padding: 16px;
+    display: flex; align-items: flex-start; justify-content: center;
+  }
+  .card {
+    width: 100%; max-width: 640px; margin-top: 24px;
+    background: rgba(30, 41, 59, 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 20px; padding: 28px 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .sub { color: #94a3b8; font-size: 13px; margin-bottom: 22px; }
+  label { display: block; font-size: 13px; color: #cbd5e1; margin: 14px 0 6px; }
+  input, select {
+    width: 100%; padding: 12px 14px; font-size: 15px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 12px; color: #f1f5f9; outline: none;
+  }
+  input:focus, select:focus { border-color: #818cf8; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  button {
+    width: 100%; margin-top: 22px; padding: 14px;
+    font-size: 15px; font-weight: 600; color: #fff; cursor: pointer;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none; border-radius: 12px;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .msg { margin-top: 16px; font-size: 14px; padding: 12px; border-radius: 10px; display: none; }
+  .msg.err { background: rgba(239,68,68,0.15); color: #fca5a5; display: block; }
+  .msg.ok  { background: rgba(34,197,94,0.15); color: #86efac; display: block; }
+  .hidden { display: none; }
+  .section-title { font-size: 14px; font-weight: 600; color: #a5b4fc; margin: 24px 0 4px; border-bottom: 1px solid rgba(148,163,184,0.15); padding-bottom: 6px; }
+  .done { text-align: center; padding: 30px 10px; }
+  .done .icon { font-size: 44px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- ЭКРАН ВХОДА -->
+  <div id="loginScreen">
+    <h1>Мектеп деректерін жинау</h1>
+    <p class="sub">Жүйеге кіру үшін логин мен құпиясөзді енгізіңіз</p>
+    <label>Логин</label>
+    <input id="login" autocomplete="off">
+    <label>Құпиясөз</label>
+    <input id="password" type="password" autocomplete="off">
+    <button id="loginBtn" onclick="doLogin()">Кіру</button>
+    <div id="loginMsg" class="msg"></div>
+  </div>
+
+  <!-- ЭКРАН ФОРМЫ -->
+  <div id="formScreen" class="hidden">
+    <h1>Мектеп ақпараты</h1>
+    <p class="sub" id="schoolHint">Барлық өрістерді толтырып, жіберіңіз. Жіберу — бір рет.</p>
+
+    <label>Мектептің толық атауы</label>
+    <input id="school_name" placeholder="Мысалы: № 1 мектеп-лицей">
+
+    <div class="section-title">Ғимарат</div>
+    <div class="row">
+      <div>
+        <label>Жеке тұрған</label>
+        <select id="standalone"><option value="иә">иә</option><option value="жоқ">жоқ</option></select>
+      </div>
+      <div>
+        <label>Оқу ғимаратында орналасқан</label>
+        <select id="in_building"><option value="иә">иә</option><option value="жоқ">жоқ</option></select>
+      </div>
+    </div>
+
+    <div class="section-title">Кабинеттер</div>
+    <div class="row">
+      <div><label>Химия (саны)</label><input id="chem_count" type="number" min="0" value="0"></div>
+      <div><label>ОЗЖ жыл</label><input id="chem_year" type="number" placeholder="2022"></div>
+    </div>
+    <div class="row">
+      <div><label>Биология (саны)</label><input id="bio_count" type="number" min="0" value="0"></div>
+      <div><label>ОЗЖ жыл</label><input id="bio_year" type="number" placeholder="2022"></div>
+    </div>
+    <div class="row">
+      <div><label>Физика (саны)</label><input id="phys_count" type="number" min="0" value="0"></div>
+      <div><label>ОЗЖ жыл</label><input id="phys_year" type="number" placeholder="2022"></div>
+    </div>
+
+    <div class="section-title">Қосымша</div>
+    <label>Жүргізілген жұмыстар (краскалау, сылау, ақтау...)</label>
+    <input id="works" placeholder="Мысалы: ақтау, бояу">
+    <div class="row">
+      <div>
+        <label>Кітапхана</label>
+        <select id="library"><option value="бар">бар</option><option value="жоқ">жоқ</option></select>
+      </div>
+      <div>
+        <label>Оқу залы</label>
+        <select id="reading_room"><option value="бар">бар</option><option value="жоқ">жоқ</option></select>
+      </div>
+    </div>
+
+    <button id="submitBtn" onclick="doSubmit()">Жіберу</button>
+    <div id="formMsg" class="msg"></div>
+  </div>
+
+  <!-- ЭКРАН ПОСЛЕ ОТПРАВКИ -->
+  <div id="doneScreen" class="hidden">
+    <div class="done">
+      <div class="icon">✅</div>
+      <h1>Деректер жіберілді</h1>
+      <p class="sub" style="margin-top:10px">Рақмет! Деректер қабылданды. Өзгерту қажет болса, әкімшіге хабарласыңыз.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // === МАҢЫЗДЫ: мұнда Apps Script веб-қосымшасының URL-ін қойыңыз ===
+  const API_URL = "https://script.google.com/macros/s/AKfycbw4xdjDyQ-GJ40xn8vmKF0VoCd46sxyBSpAY2rjL5-T-O0U8PJB4bm7gfd4yaXOysbn/exec";
+
+  let creds = { login: "", password: "" };
+
+  async function api(payload) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  }
+
+  function show(id) {
+    ["loginScreen","formScreen","doneScreen"].forEach(s =>
+      document.getElementById(s).classList.toggle("hidden", s !== id));
+  }
+
+  async function doLogin() {
+    const login = document.getElementById("login").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const msg = document.getElementById("loginMsg");
+    const btn = document.getElementById("loginBtn");
+    msg.className = "msg";
+    if (!login || !password) { msg.className="msg err"; msg.textContent="Логин мен құпиясөзді енгізіңіз"; return; }
+
+    btn.disabled = true; btn.textContent = "Тексерілуде...";
+    try {
+      const r = await api({ action: "login", login, password });
+      if (!r.ok) { msg.className="msg err"; msg.textContent=r.error; return; }
+      creds = { login, password };
+      if (r.submitted) { show("doneScreen"); return; }
+      if (r.school_name) document.getElementById("school_name").value = r.school_name;
+      show("formScreen");
+    } catch (e) {
+      msg.className="msg err"; msg.textContent="Қосылу қатесі. Интернетті тексеріңіз.";
+    } finally {
+      btn.disabled = false; btn.textContent = "Кіру";
+    }
+  }
+
+  async function doSubmit() {
+    const msg = document.getElementById("formMsg");
+    const btn = document.getElementById("submitBtn");
+    const form = {
+      school_name: val("school_name"),
+      standalone: val("standalone"),
+      in_building: val("in_building"),
+      chem_count: val("chem_count"), chem_year: val("chem_year"),
+      bio_count: val("bio_count"), bio_year: val("bio_year"),
+      phys_count: val("phys_count"), phys_year: val("phys_year"),
+      works: val("works"),
+      library: val("library"), reading_room: val("reading_room")
+    };
+    msg.className = "msg";
+    if (!form.school_name) { msg.className="msg err"; msg.textContent="Мектеп атауын енгізіңіз"; return; }
+    if (!confirm("Жіберуді растайсыз ба? Жіберуден кейін өзгерту мүмкін емес.")) return;
+
+    btn.disabled = true; btn.textContent = "Жіберілуде...";
+    try {
+      const r = await api({ action: "submit", login: creds.login, password: creds.password, form });
+      if (!r.ok) { msg.className="msg err"; msg.textContent=r.error; return; }
+      show("doneScreen");
+    } catch (e) {
+      msg.className="msg err"; msg.textContent="Қосылу қатесі. Қайталап көріңіз.";
+    } finally {
+      btn.disabled = false; btn.textContent = "Жіберу";
+    }
+  }
+
+  function val(id){ return document.getElementById(id).value.trim(); }
+</script>
+</body>
+</html>
